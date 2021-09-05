@@ -12,23 +12,15 @@ private:
     std::vector<Point<dims>> m_points;
     size_t m_size;
     size_t idx;
-
 public:
     Shape();
-
     Shape(size_t size);
-
     void operator+=(Point<dims>&& p);
-
     size_t NumPoints() const;
-
-    Shape<dims>& operator<<(Point<dims>&& p);
-
     Shape<dims> operator-(const Point<dims>& p) const;
-
-    Point<dims>& operator[](size_t i);
-
     Point<dims> operator[](size_t i) const;
+    Point<dims>& operator[](size_t i);
+    Shape<dims>& operator<<(Point<dims>&& p);
 };
 
 template<size_t dims>
