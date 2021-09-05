@@ -47,7 +47,7 @@ public:
 		return true;
 	}
 
-	void DrawShapeConsecutive(Shape<2>& shape) {
+	void DrawShapeConsecutive(const Shape<2>& shape) {
 		// iterates throught the points drawing lines from the current point to the next
 		for (size_t i = 0; i < shape.NumPoints(); ++i) {
 			const auto next = (i + 1) % shape.NumPoints();
@@ -55,7 +55,7 @@ public:
 		}
 	}
 
-	void DrawShapeAll(Shape<2>& shape) {
+	void DrawShapeAll(const Shape<2>& shape) {
 		// draws line from each point to every other point
 		for (size_t i = 0; i < shape.NumPoints(); ++i) {
 			for (size_t j = i; j < shape.NumPoints(); ++j) {
@@ -76,13 +76,13 @@ public:
 			return true;
 		}
 
-		const double angle = m_radsPerSecond * static_cast<float>(m_timeSinceLastUpdate);
+		const auto angle = m_radsPerSecond * static_cast<float>(m_timeSinceLastUpdate);
 
 		trans::Rotate<Y>(m_shape, angle); // rotate the object
-		trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame
+		trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame more slowly
 		
-		auto projected = trans::Project<X, Y>(m_shape, m_n);
-		auto mapped = trans::MapFromDomainToScreen(projected, m_domain, m_screen);
+		const auto projected = trans::Project<X, Y>(m_shape, m_n);
+		const auto mapped = map::MapFromDomainToScreen(projected, m_domain, m_screen);
 
 		Clear(olc::BLACK);
 		DrawShapeAll(mapped);

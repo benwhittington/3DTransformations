@@ -113,15 +113,4 @@ namespace trans {
         }
         return outShape;
     }
-
-    // ------------- map -------------
-    Shape<2> MapFromDomainToScreen(Shape<2>& shape, Domain domain, Screen screen) {
-        auto outShape = Shape<2>(shape.NumPoints());
-        for (size_t i = 0; i < shape.NumPoints(); ++i) {
-            auto x = MapRange(shape[i].x(), domain.MinX(), domain.MaxX(), static_cast<double>(screen.PixelsX()), static_cast<double>(0));
-            auto y = MapRange(shape[i].y(), domain.MinY(), domain.MaxY(), static_cast<double>(screen.PixelsY()), static_cast<double>(0));
-            outShape << Point<2>(x, y);
-        }
-        return outShape;
-    }
 }
