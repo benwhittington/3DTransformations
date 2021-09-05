@@ -66,12 +66,18 @@ public:
         return res;
     }
 
-    Point<dims> operator/=(double val) const {
-        auto res = *this;
+    Point<dims>& operator+=(const Point<dims>& p) {
         for (size_t i = 0; i < dims; ++i) {
-            res[i] /= val;
+            m_pts[i] += p[i];
         }
-        return res;
+        return *this;
+    }
+
+    Point<dims>& operator/=(double val) {
+        for (size_t i = 0; i < dims; ++i) {
+            m_pts[i] /= val;
+        }
+        return *this;
     }
 
     double Norm() const {
@@ -123,6 +129,13 @@ public:
     }
 
     ~Shape() {}
+
+    Shape<dims>& operator+=(Point<dims>&& p) {
+        for (auto val : m_points) {
+            val += p;
+        }
+        return *this;
+    }
 
     size_t NumPoints() const {
         return m_size;

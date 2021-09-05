@@ -1,7 +1,8 @@
 #pragma once
 
-#include "shape.hpp"
 #include "domain.hpp"
+#include "screen.hpp"
+#include "shape.hpp"
 
 namespace map {
     template <typename A, typename B, typename C>
