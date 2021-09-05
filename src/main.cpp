@@ -8,12 +8,15 @@
 #include "domain.hpp"
 #include "transform.hpp"
 
+static constexpr double pi = 3.141592;
+
 class Transform : public olc::PixelGameEngine {
 	Shape<3> m_shape;
 	Point<3> m_n;
 	Point<2> m_screenOrigin;
 	Domain m_domain;
 	Screen m_screen;
+	double m_radsPerSecond;
 	float m_timeSinceLastUpdate;
 	float m_minDelta;
 	bool m_pause;
@@ -36,8 +39,9 @@ public:
 		m_domain = Domain(-2, 2, -2, 2);
 		m_screen = Screen(ScreenWidth(), ScreenHeight());
 		m_screenOrigin = Point<2>(ScreenWidth() / 2, ScreenHeight() / 2);
-		m_minDelta = 0.05;
+		m_minDelta = 0.005;
 		m_timeSinceLastUpdate = m_minDelta + 1;
+		m_radsPerSecond = pi / 2;
 		m_pause = false;
 
 		return true;
@@ -54,7 +58,7 @@ public:
 	void DrawShapeAll(Shape<2>& shape) {
 		// draws line from each point to every other point
 		for (size_t i = 0; i < shape.NumPoints(); ++i) {
-			for (size_t j = i + 1; j < shape.NumPoints(); ++j) {
+			for (size_t j = i; j < shape.NumPoints(); ++j) {
 				DrawLine(shape[i].x(), shape[i].y(), shape[j].x(), shape[j].y());
 			}
 		}
@@ -70,10 +74,11 @@ public:
 		if (m_pause || m_timeSinceLastUpdate < m_minDelta) {
 			return true;
 		}
-		m_timeSinceLastUpdate = 0;
 
-		trans::Rotate<Y>(m_shape, 0.1); // rotate the object
-		trans::Rotate<Z>(m_n, 0.01); // rotate the reference frame
+		const double angle = m_radsPerSecond * static_cast<float>(m_timeSinceLastUpdate);
+
+		trans::Rotate<Y>(m_shape, angle); // rotate the object
+		trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame
 		
 		auto projected = trans::Project<X, Y>(m_shape, m_n);
 		auto mapped = trans::MapFromDomainToScreen(projected, m_domain, m_screen);
@@ -81,6 +86,7 @@ public:
 		Clear(olc::BLACK);
 		DrawShapeAll(mapped);
 
+		m_timeSinceLastUpdate = 0;
 		return true;
 	}
 };
