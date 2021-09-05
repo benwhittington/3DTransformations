@@ -74,8 +74,8 @@ private:
     double m_initMinY;
     double m_initMaxY;
 
-    static constexpr double m_sFactor = 1.1;
-    static constexpr double m_sShift = 0.1;
+    static constexpr double m_sFactor = 1.01;
+    static constexpr double m_sShift = 0.01;
 
     static void pos(double& x0, double& x1){
         const auto absShift = m_sShift * (x1 - x0);

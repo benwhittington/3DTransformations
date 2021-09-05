@@ -3,9 +3,10 @@
 #include <vector>
 #include <iostream>
 
-#include "shape.hpp"
-#include "mapRange.hpp"
 #include "domain.hpp"
+#include "mapRange.hpp"
+#include "point.hpp"
+#include "shape.hpp"
 #include "transform.hpp"
 
 static constexpr double pi = 3.141592;
@@ -19,7 +20,7 @@ class Transform : public olc::PixelGameEngine {
 	Domain m_domain;
 	Screen m_screen;
 	double m_radsPerSecond;
-	float m_timeSinceLastUpdate;
+	float m_secondsSinceLastUpdate;
 	float m_minDelta;
 	bool m_pause;
 
@@ -30,13 +31,15 @@ public:
 
 public:
 	bool OnUserCreate() override {
+		// pyramid
 		m_shape0 = Shape<3>(5)
 				<< Point<3>(-1, 0, 0)
 				<< Point<3>(1, 0, 0)
 				<< Point<3>(0, 1, 0)
 				<< Point<3>(0, 0, 1)
 				<< Point<3>(0, 0, -1);
-
+		
+		// cube
 		m_shape1 = Shape<3>(8)
 				<< Point<3>(0, 0, 0)
 				<< Point<3>(1, 0, 0)
@@ -51,13 +54,14 @@ public:
 		std::cout << m_shape1[0].x() << ", " << m_shape1[0].x() << ", " << m_shape1[0].x() << std::endl;
 
 		m_n = Point<3>(0, 1, -1);
+		// m_n /= m_n.
 		m_basis = Point<3>(1, 1, 1);
 		m_basis /= m_basis.Norm();
 		m_domain = Domain(-2, 2, -2, 2);
 		m_screen = Screen(ScreenWidth(), ScreenHeight());
 		m_screenOrigin = Point<2>(ScreenWidth() / 2, ScreenHeight() / 2);
 		m_minDelta = 0.005;
-		m_timeSinceLastUpdate = m_minDelta + 1;
+		m_secondsSinceLastUpdate = m_minDelta + 1;
 		m_radsPerSecond = pi / 2;
 		m_pause = false;
 
@@ -73,7 +77,7 @@ public:
 		}
 	}
 
-	void DrawShapeAll(const Shape<3>& shapeIn) {
+	void DrawShapeAll(Shape<3>& shapeIn) {
 		// draws line from each point to every other point
 		const auto shapeDraw = ProjectAndMap(shapeIn);
 		for (size_t i = 0; i < shapeDraw.NumPoints(); ++i) {
@@ -90,49 +94,54 @@ public:
 
 	void GetUserInput() {
 		using K = olc::Key;
-		constexpr double angle = 2 * pi / 50; 
-		if (GetKey(K::W).bPressed) {
+		double angle = m_radsPerSecond * pi / 2500; 
+		if (GetKey(K::W).bHeld) {
 			trans::Rotate<X>(m_n, angle);
         }
-		else if (GetKey(K::S).bPressed) {
+		else if (GetKey(K::S).bHeld) {
 			trans::Rotate<X>(m_n, -angle);
         }
-		else if (GetKey(K::D).bPressed) {
+		else if (GetKey(K::D).bHeld) {
 			trans::Rotate<Y>(m_n, -angle);
         }
-		else if (GetKey(K::A).bPressed) {
+		else if (GetKey(K::A).bHeld) {
 			trans::Rotate<Y>(m_n, angle);
         }
-		else if (GetKey(K::R).bPressed) {
+		else if (GetKey(K::Q).bHeld) {
+			trans::Rotate<Z>(m_n, angle);
+        }
+		else if (GetKey(K::E).bHeld) {
+			trans::Rotate<Z>(m_n, -angle);
         }
 		else if (GetKey(K::EQUALS).bHeld) {
+			m_domain.ZoomOut();
         }
 		else if (GetKey(K::MINUS).bHeld) {
+			m_domain.ZoomIn();
         }
 		else if (GetKey(K::SPACE).bPressed) {
-			m_timeSinceLastUpdate = 0;
+			m_secondsSinceLastUpdate = 0;
 			m_pause = !m_pause;
         }
 	}
 
 	bool OnUserUpdate(float secondsDelta) override {
-		GetUserInput();
-
-		m_timeSinceLastUpdate += secondsDelta;
-		if (m_pause || m_timeSinceLastUpdate < m_minDelta) {
+		m_secondsSinceLastUpdate += secondsDelta;
+		if (m_pause || m_secondsSinceLastUpdate < m_minDelta) {
 			return true;
 		}
 
-		const auto angle = m_radsPerSecond * static_cast<float>(m_timeSinceLastUpdate);
-
-		trans::Rotate<Y>(m_shape0, angle); // rotate the object
+		GetUserInput();
+		// const auto angle = m_radsPerSecond * static_cast<float>(m_secondsSinceLastUpdate);
+		std::cout << m_n[0] << ", " << m_n[1] << ", " << m_n[2] << std::endl;
+		// trans::Rotate<Y>(m_shape0, angle); // rotate the object
 		// trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame more slowly
 
 		Clear(olc::BLACK);
 		DrawShapeAll(m_shape0);
 		DrawShapeAll(m_shape1);
 
-		m_timeSinceLastUpdate = 0;
+		m_secondsSinceLastUpdate = 0;
 		return true;
 	}
 };

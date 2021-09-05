@@ -3,6 +3,7 @@
 #include "domain.hpp"
 #include "screen.hpp"
 #include "shape.hpp"
+#include "point.hpp"
 
 namespace map {
     template <typename A, typename B, typename C>

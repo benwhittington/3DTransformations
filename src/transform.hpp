@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "mapRange.hpp"
+#include "point.hpp"
 #include "shape.hpp"
 #include "screen.hpp"
 
