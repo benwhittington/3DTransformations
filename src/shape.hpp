@@ -66,11 +66,10 @@ public:
         return res;
     }
 
-    Point<dims>& operator+=(const Point<dims>& p) {
+    void operator+=(const Point<dims>& p) {
         for (size_t i = 0; i < dims; ++i) {
             m_pts[i] += p[i];
         }
-        return *this;
     }
 
     Point<dims>& operator/=(double val) {
@@ -130,11 +129,10 @@ public:
 
     ~Shape() {}
 
-    Shape<dims>& operator+=(Point<dims>&& p) {
-        for (auto val : m_points) {
+    void operator+=(Point<dims>&& p) {
+        for (auto& val : m_points) {
             val += p;
         }
-        return *this;
     }
 
     size_t NumPoints() const {

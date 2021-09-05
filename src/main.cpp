@@ -48,6 +48,7 @@ public:
 				<< Point<3>(0, 1, 1);
 
 		m_shape1 += Point<3>(1, 1, 1);
+		std::cout << m_shape1[0].x() << ", " << m_shape1[0].x() << ", " << m_shape1[0].x() << std::endl;
 
 		m_n = Point<3>(0, 1, -1);
 		m_basis = Point<3>(1, 1, 1);
@@ -126,11 +127,10 @@ public:
 
 		trans::Rotate<Y>(m_shape0, angle); // rotate the object
 		// trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame more slowly
-		
-
 
 		Clear(olc::BLACK);
 		DrawShapeAll(m_shape0);
+		DrawShapeAll(m_shape1);
 
 		m_timeSinceLastUpdate = 0;
 		return true;
