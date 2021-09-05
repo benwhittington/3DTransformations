@@ -32,7 +32,6 @@ public:
 				<< Point<3>(0, 0, 1)
 				<< Point<3>(0, 0, -1);
 
-
 		m_n = Point<3>(0, 1, -1);
 		m_domain = Domain(-2, 2, -2, 2);
 		m_screen = Screen(ScreenWidth(), ScreenHeight());

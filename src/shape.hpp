@@ -128,7 +128,7 @@ public:
         return m_size;
     }
 
-    Shape<dims>& operator<<(Point<dims> p) {
+    Shape<dims>& operator<<(Point<dims>&& p) {
         m_points[idx++] = p;
         return *this;
     }
