@@ -68,6 +68,7 @@ public:
 		m_timeSinceLastUpdate += secondsDelta;
 
 		if (GetKey(olc::Key::SPACE).bPressed) {
+			m_timeSinceLastUpdate = 0;
 			m_pause = !m_pause;
         }
 
