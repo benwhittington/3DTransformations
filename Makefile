@@ -1,17 +1,29 @@
 CXX = g++
-# LD = ld
 LDFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs
 CXXFLAGS = -std=c++14 -Wall -Wextra -Wpedantic -c
+
 TARGET = main
+SRCDIR = src/
+OBJDIR = obj/
 
-HEADERS = src/shape.hpp src/screen.hpp src/domain.hpp src/mapRange.hpp src/transform.hpp
+HPPS = $(wildcard $(SRCDIR)*.hpp)
+CPPS = $(wildcard $(SRCDIR)*.cpp)
+OBJS = $(wildcard $(OBJDIR)*)
 
-all: $(TARGET)
+.PHONEY: dirs all clean
+
+all: dirs $(TARGET)
+
+dirs:
+	mkdir -p $(OBJDIR)
+
+clean:
+	rm -f $(TARGET) $(OBJS) && rmdir $(OBJDIR)
 
 $(TARGET): obj/main.o obj/point.o obj/shape.o
-	$(CXX) -o $(TARGET) $^ $(LDFLAGS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-obj/main.o: src/main.cpp $(HEADERS)
+obj/main.o: src/main.cpp $(HPPS)
 	$(CXX) -o $@ $< $(CXXFLAGS)
 
 obj/point.o: src/point.cpp src/point.hpp
