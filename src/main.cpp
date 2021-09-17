@@ -12,17 +12,17 @@
 static constexpr double pi = 3.141592;
 
 class Transform : public olc::PixelGameEngine {
-	Shape<3> m_shape0;
-	Shape<3> m_shape1;
-	Point<3> m_n;
-	Point<3> m_basis;
-	Point<2> m_screenOrigin;
-	Domain m_domain;
-	Screen m_screen;
-	double m_radsPerSecond;
-	float m_secondsSinceLastUpdate;
-	float m_minDelta;
-	bool m_pause;
+	Shape<3> m_Shape0;
+	Shape<3> m_Shape1;
+	Point<3> m_N;
+	Point<3> m_Basis;
+	Point<2> m_ScreenOrigin;
+	Domain m_Domain;
+	Screen m_Screen;
+	double m_RadsPerSecond;
+	float m_SecondsSinceLastUpdate;
+	float m_MinDelta;
+	bool m_Pause;
 
 public:
 	Transform() {
@@ -32,7 +32,7 @@ public:
 public:
 	bool OnUserCreate() override {
 		// pyramid
-		m_shape0 = Shape<3>(5)
+		m_Shape0 = Shape<3>(5)
 				<< Point<3>(-1, 0, 0)
 				<< Point<3>(1, 0, 0)
 				<< Point<3>(0, 1, 0)
@@ -40,7 +40,7 @@ public:
 				<< Point<3>(0, 0, -1);
 		
 		// cube
-		m_shape1 = Shape<3>(8)
+		m_Shape1 = Shape<3>(8)
 				<< Point<3>(0, 0, 0)
 				<< Point<3>(1, 0, 0)
 				<< Point<3>(1, 0, 1)
@@ -50,20 +50,20 @@ public:
 				<< Point<3>(1, 1, 1)
 				<< Point<3>(0, 1, 1);
 
-		m_shape1 += Point<3>(1, 1, 1);
-		std::cout << m_shape1[0].x() << ", " << m_shape1[0].x() << ", " << m_shape1[0].x() << std::endl;
+		m_Shape1 += Point<3>(1, 1, 1);
+		std::cout << m_Shape1[0].x() << ", " << m_Shape1[0].x() << ", " << m_Shape1[0].x() << std::endl;
 
-		m_n = Point<3>(0, 1, -1);
-		// m_n /= m_n.
-		m_basis = Point<3>(1, 1, 1);
-		m_basis /= m_basis.Norm();
-		m_domain = Domain(-2, 2, -2, 2);
-		m_screen = Screen(ScreenWidth(), ScreenHeight());
-		m_screenOrigin = Point<2>(ScreenWidth() / 2, ScreenHeight() / 2);
-		m_minDelta = 0.005;
-		m_secondsSinceLastUpdate = m_minDelta + 1;
-		m_radsPerSecond = pi / 2;
-		m_pause = false;
+		m_N = Point<3>(0, 1, -1);
+		m_Basis = Point<3>(1, 1, 1);
+		m_Basis /= m_Basis.Norm();
+		
+		m_Domain = Domain(-2, 2, -2, 2);
+		m_Screen = Screen(ScreenWidth(), ScreenHeight());
+		m_ScreenOrigin = Point<2>(ScreenWidth() / 2, ScreenHeight() / 2);
+		m_MinDelta = 0.005;
+		m_SecondsSinceLastUpdate = m_MinDelta + 1;
+		m_RadsPerSecond = pi / 2;
+		m_Pause = false;
 
 		return true;
 	}
@@ -88,60 +88,61 @@ public:
 	}
 
 	Shape<2> ProjectAndMap(const Shape<3>& shape) {
-		const auto projected = trans::Project<X, Y>(shape, m_n);
-		return map::MapFromDomainToScreen(projected, m_domain, m_screen);
+		const auto projected = trans::Project<X, Y>(shape, m_N);
+		return map::MapFromDomainToScreen(projected, m_Domain, m_Screen);
 	}
 
 	void GetUserInput() {
 		using K = olc::Key;
-		double angle = m_radsPerSecond * pi / 2500; 
+		double angle = m_RadsPerSecond * pi / 2500; 
 		if (GetKey(K::W).bHeld) {
-			trans::Rotate<X>(m_n, angle);
+			trans::Rotate<X>(m_N, angle);
         }
 		else if (GetKey(K::S).bHeld) {
-			trans::Rotate<X>(m_n, -angle);
+			trans::Rotate<X>(m_N, -angle);
         }
 		else if (GetKey(K::D).bHeld) {
-			trans::Rotate<Y>(m_n, -angle);
+			trans::Rotate<Y>(m_N, -angle);
         }
 		else if (GetKey(K::A).bHeld) {
-			trans::Rotate<Y>(m_n, angle);
+			trans::Rotate<Y>(m_N, angle);
         }
 		else if (GetKey(K::Q).bHeld) {
-			trans::Rotate<Z>(m_n, angle);
+			trans::Rotate<Z>(m_N, angle);
         }
 		else if (GetKey(K::E).bHeld) {
-			trans::Rotate<Z>(m_n, -angle);
+			trans::Rotate<Z>(m_N, -angle);
         }
 		else if (GetKey(K::EQUALS).bHeld) {
-			m_domain.ZoomOut();
+			m_Domain.ZoomOut();
         }
 		else if (GetKey(K::MINUS).bHeld) {
-			m_domain.ZoomIn();
+			m_Domain.ZoomIn();
         }
 		else if (GetKey(K::SPACE).bPressed) {
-			m_secondsSinceLastUpdate = 0;
-			m_pause = !m_pause;
+			m_SecondsSinceLastUpdate = 0;
+			m_Pause = !m_Pause;
         }
 	}
 
 	bool OnUserUpdate(float secondsDelta) override {
-		m_secondsSinceLastUpdate += secondsDelta;
-		if (m_pause || m_secondsSinceLastUpdate < m_minDelta) {
+		m_SecondsSinceLastUpdate += secondsDelta;
+		if (m_Pause || m_SecondsSinceLastUpdate < m_MinDelta) {
 			return true;
 		}
 
 		GetUserInput();
-		// const auto angle = m_radsPerSecond * static_cast<float>(m_secondsSinceLastUpdate);
-		std::cout << m_n[0] << ", " << m_n[1] << ", " << m_n[2] << std::endl;
-		// trans::Rotate<Y>(m_shape0, angle); // rotate the object
-		// trans::Rotate<Z>(m_n, angle * 0.1); // rotate the reference frame more slowly
+		
+		const auto angle = m_RadsPerSecond * static_cast<float>(m_SecondsSinceLastUpdate);
+		trans::Rotate<Y>(m_Shape0, angle); // rotate the object
+		trans::Rotate<Z>(m_N, angle * 0.1); // rotate the reference frame more slowly
 
 		Clear(olc::BLACK);
-		DrawShapeAll(m_shape0);
-		DrawShapeAll(m_shape1);
+		DrawShapeAll(m_Shape0);
+		DrawShapeAll(m_Shape1);
 
-		m_secondsSinceLastUpdate = 0;
+		m_SecondsSinceLastUpdate = 0;
+
 		return true;
 	}
 };

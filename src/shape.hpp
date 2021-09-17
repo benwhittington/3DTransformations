@@ -9,9 +9,9 @@
 template<size_t dims>
 class Shape {
 private:
-    std::vector<Point<dims>> m_points;
-    size_t m_size;
-    size_t idx;
+    std::vector<Point<dims>> m_Points;
+    size_t m_Size;
+    size_t m_Idx;
 public:
     Shape();
     Shape(size_t size);
